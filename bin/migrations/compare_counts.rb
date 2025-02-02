@@ -86,7 +86,7 @@ def build_graphs_file_hash(folder_path = PROCESSED_DIR)
     if filename.end_with?('.graph')
       file_path = File.join(folder_path, filename)
       line = File.open(file_path, "r").readlines.first
-      graphs[line.strip] = filename.to_s.gsub('.graph','')
+      graphs[line.strip] = filename.to_s.gsub('.graph', '')
     end
   end
   graphs
@@ -107,7 +107,6 @@ def compare_graphs_with_files(graph_triples)
       
       # Construct the expected file name based on the graph URI
       file_name = "#{PROCESSED_DIR}/#{graph_filename}"
-      
       # puts "count lines of the file #{file_name} for the graph #{graph_uri}"
       if File.exist?(file_name)
         file_lines_count = count_file_lines(file_name)
@@ -128,58 +127,9 @@ def compare_graphs_with_files(graph_triples)
 end
 
 # Main execution
-
 Goo.sparql_query_client.cache.redis_cache.flushdb
 puts "Redis cache flushed"
 
 puts "Comparing graph triple counts with file lines and exporting to CSV..."
 graph_triples = get_all_graphs_counts
 compare_graphs_with_files(graph_triples)
-
-count = 0
-attr_ontology = []
-time = Benchmark.realtime do
-  attr_ontology = LinkedData::Models::Ontology.attributes(:all)
-  count = LinkedData::Models::Ontology.where.include(attr_ontology).all.count
-end
-puts "Ontologies count: #{count} with display=all in #{format("%.4f", time)}s"
-count = 0
-time = Benchmark.realtime do
-  count = LinkedData::Models::OntologySubmission.where.all.count
-end
-puts "Submissions count: #{count} with no display in #{format("%.4f", time)}s"
-
-count = 0
-time = Benchmark.realtime do
-  attr = LinkedData::Models::OntologySubmission.attributes(:all)
-  attr << {ontology: attr_ontology}
-  count = LinkedData::Models::OntologySubmission.where.include(attr).all.count
-end
-puts "Submissions count: #{count} with display=all in #{format("%.4f", time)}s"
-
-count = 0
-time = Benchmark.realtime do
-  attr = LinkedData::Models::Agent.attributes(:all)
-  count = LinkedData::Models::Agent.where.include(attr).all.count
-end
-puts "Agent count: #{count} with display=all in #{format("%.4f", time)}s"
-
-count = 0
-time = Benchmark.realtime do
-  attr = LinkedData::Models::MappingCount.attributes(:all)
-  count = LinkedData::Models::MappingCount.where.include(attr).all.count
-end
-puts "MappingsCount count: #{count} with display=all in #{format("%.4f", time)}s"
-
-count = 0
-time = Benchmark.realtime do
-  count += LinkedData::Models::RestBackupMapping.where.all.count
-end
-puts "RestMappings count: #{count} with no display in #{format("%.4f", time)}s"
-
-count = 0
-time = Benchmark.realtime do
-  attr = LinkedData::Models::RestBackupMapping.attributes(:all) + LinkedData::Models::MappingProcess.attributes(:all)
-  count += LinkedData::Models::RestBackupMapping.where.include(attr).all.count
-end
-puts "RestMappings count: #{count} with display=all in #{format("%.4f", time)}s"

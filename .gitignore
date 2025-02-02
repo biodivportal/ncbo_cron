@@ -33,3 +33,8 @@ logs/
 .java-version
 
 processed_files/
+
+queries.txt
+
+graph_comparison.csv
+
