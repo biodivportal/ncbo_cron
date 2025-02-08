@@ -1,8 +1,6 @@
 set :branch, 'master'
 set :server, 'biodivportal.gfbio.dev'
-
 server fetch(:server), user: fetch(:user), roles: %w{web app}
-
 set :ssh_options, {
   user: 'ontoportal',
   forward_agent: 'true',
